@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#f472b6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="MidWay Filler">
+<title>MidWay 5L/10L Filler</title>
+<script>
+const manifest={"name":"MidWay Filler - Aambika","short_name":"MidWay","start_url":"./","display":"standalone","background_color":"#0f172a","theme_color":"#f472b6","icons":[{"src":"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="40" fill="#ec4899"/><text x="96" y="130" font-size="80" text-anchor="middle" fill="white">🔄</text></svg>'),"sizes":"192x192","type":"image/svg+xml","purpose":"any maskable"}]};
+const b=new Blob([JSON.stringify(manifest)],{type:'application/json'});const l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(b);document.head.appendChild(l);
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--primary:#ec4899;--primary-dark:#db2777;--primary-light:#fce7f3;--bg-dark:#0f172a;--bg-card:#1e293b;--bg-input:#0f172a;--border:#334155;--text-primary:#f8fafc;--text-secondary:#94a3b8;--text-muted:#64748b;--danger:#dc2626;--warning:#f59e0b;--purple:#8b5cf6;--cyan:#06b6d4;--green:#059669}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:linear-gradient(135deg,var(--bg-dark) 0%,#1e293b 50%,var(--bg-dark) 100%);color:var(--text-primary);min-height:100vh;overflow-x:hidden}
+.loading-screen{position:fixed;inset:0;background:var(--bg-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999}
+.loading-spinner{width:50px;height:50px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}.loading-text{margin-top:16px;color:var(--text-secondary);font-size:14px}
+.login-screen{min-height:100vh;display:flex;flex-direction:column;padding:20px}.login-header{text-align:center;padding:40px 0}
+.login-logo{width:80px;height:80px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px;box-shadow:0 10px 40px rgba(236,72,153,0.3)}
+.login-title{font-size:13px;font-weight:600;color:var(--primary);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}.login-subtitle{font-size:22px;font-weight:800}
+.login-card{background:var(--bg-card);border-radius:24px;padding:24px;border:1px solid var(--border)}
+.form-group{margin-bottom:16px}.form-label{display:block;font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.form-input{width:100%;padding:14px;font-size:16px;font-family:inherit;border:2px solid var(--border);border-radius:12px;background:var(--bg-input);color:var(--text-primary);outline:none}.form-input:focus{border-color:var(--primary)}.form-input::placeholder{color:var(--text-muted)}
+.form-select{width:100%;padding:14px;font-size:16px;font-family:inherit;border:2px solid var(--border);border-radius:12px;background:var(--bg-input);color:var(--text-primary);outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:20px}
+.btn{width:100%;padding:16px;font-size:16px;font-weight:700;font-family:inherit;border:none;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;box-shadow:0 4px 15px rgba(236,72,153,0.4)}.btn-primary:active{transform:scale(.98)}.btn-primary:disabled{opacity:.6}
+.error-message{background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.3);color:#fca5a5;padding:12px;border-radius:10px;font-size:14px;margin-bottom:16px;display:none}.error-message.show{display:block}
+.app-container{display:none;padding-bottom:170px}
+.app-header{background:linear-gradient(135deg,var(--primary),var(--primary-dark));padding:16px 20px;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(236,72,153,0.3)}
+.app-header-top{display:flex;justify-content:space-between;align-items:center}.app-header-title{font-size:11px;font-weight:600;color:var(--primary-light);letter-spacing:.5px}.app-header-subtitle{font-size:15px;font-weight:700;color:white}
+.operator-info{font-size:11px;color:rgba(255,255,255,.8);margin-top:4px}
+.connection-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;margin-top:6px}
+.connection-badge.connected{background:rgba(236,72,153,.3);color:#fbcfe8}.connection-badge.offline{background:rgba(220,38,38,.2);color:#fca5a5}
+.connection-dot{width:6px;height:6px;border-radius:50%}.connection-badge.connected .connection-dot{background:#fbcfe8}.connection-badge.offline .connection-dot{background:#fca5a5}
+.user-avatar{width:40px;height:40px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;cursor:pointer}
+.user-menu{display:none;position:fixed;top:70px;right:16px;background:var(--bg-card);border-radius:12px;padding:8px;box-shadow:0 10px 40px rgba(0,0,0,.3);border:1px solid var(--border);z-index:200;min-width:200px}.user-menu.show{display:block}
+.user-menu-header{padding:12px 16px;border-bottom:1px solid var(--border);margin-bottom:8px}.user-menu-name{font-size:14px;font-weight:600}.user-menu-contact{font-size:12px;color:var(--text-muted)}
+.user-menu-item{display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:14px;color:var(--text-primary);border-radius:8px;cursor:pointer}.user-menu-item:hover{background:var(--bg-input)}.user-menu-item.danger{color:var(--danger)}
+.nav-tabs{display:flex;background:var(--bg-card);margin:16px;border-radius:12px;padding:4px}
+.nav-tab{flex:1;padding:12px 8px;border:none;background:transparent;color:var(--text-muted);font-size:13px;font-weight:600;border-radius:10px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}.nav-tab.active{background:var(--primary);color:white}
+.section{padding:0 16px;margin-bottom:16px}.card{background:var(--bg-card);border-radius:16px;padding:20px;border:1px solid var(--border);margin-bottom:16px}
+.card-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.card-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.info-display{background:var(--bg-input);border:2px solid var(--border);border-radius:12px;padding:14px;font-size:16px;color:var(--text-primary)}
+.target-display{background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:12px;padding:16px;text-align:center;margin-top:16px}
+.target-label{font-size:11px;color:#fbcfe8;text-transform:uppercase;letter-spacing:.5px}.target-value{font-size:28px;font-weight:800;color:white}.target-unit{font-size:13px;font-weight:500}
+.changeover-card{background:var(--bg-card);border-radius:16px;border:2px solid var(--purple);overflow:hidden;margin-bottom:16px}
+.changeover-hdr{background:linear-gradient(135deg,#7c3aed,#6d28d9);padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+.changeover-hdr-title{font-size:14px;font-weight:700;color:white}.changeover-hdr-sub{font-size:12px;color:#c4b5fd}
+.changeover-body{padding:16px}
+.co-btn{width:100%;padding:14px;font-size:15px;font-weight:700;font-family:inherit;border:none;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.co-btn.start{background:linear-gradient(135deg,#f59e0b,#d97706);color:white}.co-btn.stop{background:linear-gradient(135deg,#dc2626,#b91c1c);color:white;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 4px 15px rgba(220,38,38,.3)}50%{box-shadow:0 4px 30px rgba(220,38,38,.6)}}
+.co-timer{font-size:48px;font-weight:800;color:var(--warning);text-align:center;padding:16px 0;font-variant-numeric:tabular-nums}.co-timer.done{color:var(--green)}
+.co-log{margin-top:12px;font-size:12px;color:var(--text-muted);background:var(--bg-input);border-radius:8px;padding:10px}
+.co-log-entry{padding:4px 0;border-bottom:1px solid var(--border)}.co-log-entry:last-child{border:none}
+.sku-separator{background:linear-gradient(135deg,rgba(139,92,246,.15),rgba(109,40,217,.08));border:2px dashed var(--purple);border-radius:12px;padding:12px 16px;margin-bottom:12px;text-align:center}
+.sku-separator-title{font-size:14px;font-weight:700;color:var(--purple)}.sku-separator-sub{font-size:11px;color:var(--text-muted);margin-top:2px}
+.hour-card{background:var(--bg-card);border-radius:16px;margin-bottom:12px;border:1px solid var(--border);overflow:hidden}
+.hour-card.active{border-color:var(--primary);box-shadow:0 0 20px rgba(236,72,153,.2)}.hour-card.completed{border-color:var(--primary)}
+.hour-header{padding:16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;background:linear-gradient(135deg,rgba(30,41,59,.8),rgba(15,23,42,.8))}
+.hour-header-left{display:flex;align-items:center;gap:12px}
+.hour-number{width:36px;height:36px;background:var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--text-secondary)}
+.hour-card.completed .hour-number{background:var(--primary);color:white}.hour-card.active .hour-number{background:var(--cyan);color:white}
+.hour-time{font-size:14px;font-weight:600}.hour-target{font-size:12px;color:var(--text-muted)}
+.sku-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-left:6px}
+.sku-5l{background:rgba(6,182,212,.2);color:#06b6d4}.sku-10l{background:rgba(139,92,246,.2);color:#8b5cf6}
+.eff-high{background:linear-gradient(135deg,#059669,#047857);color:white}.eff-medium{background:linear-gradient(135deg,var(--warning),#b45309);color:white}.eff-low{background:linear-gradient(135deg,var(--danger),#b91c1c);color:white}
+.hour-efficiency{padding:6px 12px;border-radius:20px;font-size:13px;font-weight:700}
+.hour-expand{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:transform .2s}.hour-card.expanded .hour-expand{transform:rotate(180deg)}
+.hour-body{display:none;padding:0 16px 16px}.hour-card.expanded .hour-body{display:block}
+.hour-input-group label{display:block;font-size:10px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase}
+.hour-input{width:100%;padding:12px;font-size:16px;font-family:inherit;border:2px solid var(--border);border-radius:10px;background:var(--bg-input);color:var(--text-primary);outline:none}.hour-input:focus{border-color:var(--primary)}
+.calc-display{background:linear-gradient(135deg,rgba(236,72,153,.12),rgba(219,39,119,.08));border:2px solid var(--primary);border-radius:10px;padding:12px;font-size:20px;font-weight:800;color:var(--primary);text-align:center}
+.calc-label{font-size:9px;color:var(--primary);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.wastage-section{background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.2);border-radius:10px;padding:12px;margin-top:10px}
+.wastage-title{font-size:12px;font-weight:600;color:var(--danger);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.downtime-section{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:12px;margin-top:12px}
+.downtime-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.downtime-title{font-size:13px;font-weight:600;color:var(--warning);display:flex;align-items:center;gap:6px}
+.add-btn{padding:6px 12px;font-size:12px;font-weight:600;border:none;border-radius:6px;cursor:pointer;font-family:inherit}.add-btn.warning{background:var(--warning);color:white}
+.downtime-entry{background:rgba(0,0,0,.2);border-radius:8px;padding:10px;margin-bottom:8px}
+.downtime-entry-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.downtime-entry-title{font-size:12px;font-weight:600;color:var(--warning)}
+.remove-btn{padding:4px 8px;font-size:10px;font-weight:600;border:none;border-radius:4px;background:var(--danger);color:white;cursor:pointer;font-family:inherit}
+.downtime-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.downtime-input{width:100%;padding:8px;font-size:13px;font-family:inherit;border:1px solid rgba(245,158,11,.3);border-radius:6px;background:var(--bg-input);color:var(--text-primary);outline:none}
+.downtime-reason{width:100%;padding:8px;font-size:13px;font-family:inherit;border:1px solid rgba(245,158,11,.3);border-radius:6px;background:var(--bg-input);color:var(--text-primary);outline:none;resize:none}
+.summary-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(15,23,42,.95);backdrop-filter:blur(10px);border-top:1px solid var(--border);padding:12px 16px;z-index:100}
+.summary-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}.summary-stat{text-align:center}
+.summary-stat-value{font-size:16px;font-weight:800}.summary-stat-label{font-size:9px;color:var(--text-muted);text-transform:uppercase}
+.submit-btn{width:100%;padding:14px;font-size:16px;font-weight:700;font-family:inherit;border:none;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 15px rgba(236,72,153,.4)}.submit-btn:disabled{opacity:.6}
+.history-section{padding:0 16px;display:none}.history-card{background:var(--bg-card);border-radius:16px;padding:16px;margin-bottom:12px;border:1px solid var(--border)}
+.history-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}.history-date{font-size:16px;font-weight:700}.history-shift{font-size:13px;color:var(--text-muted)}
+.history-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.history-stat{text-align:center}.history-stat-value{font-size:18px;font-weight:700}.history-stat-label{font-size:11px;color:var(--text-muted)}
+.empty-state{text-align:center;padding:60px 20px}.empty-icon{font-size:60px;margin-bottom:16px}.empty-text{color:var(--text-muted);font-size:14px}
+.toast{position:fixed;bottom:180px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg-card);padding:12px 24px;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.3);border:1px solid var(--border);font-size:14px;font-weight:500;opacity:0;transition:all .3s;z-index:300;max-width:90%;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.toast.success{border-color:var(--primary);color:var(--primary-light)}.toast.error{border-color:var(--danger);color:#fca5a5}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div id="loadingScreen" class="loading-screen"><div class="loading-spinner"></div><div class="loading-text">Loading...</div></div>
+<div id="loginScreen" class="login-screen hidden">
+<div class="login-header"><div class="login-logo">🔄</div><div class="login-title">Aambika Foods & Beverages</div><div class="login-subtitle">MidWay 5L/10L Filler</div></div>
+<div class="login-card"><div style="text-align:center;margin-bottom:20px"><div style="font-size:40px;margin-bottom:10px">👤</div><div style="font-size:14px;color:var(--text-secondary)">Enter your name to start</div></div>
+<div id="errorMessage" class="error-message"></div>
+<div class="form-group"><label class="form-label">Your Full Name</label><input type="text" id="loginName" class="form-input" placeholder="Enter your name"></div>
+<button class="btn btn-primary" onclick="loginOperator()">Start Reporting →</button></div>
+</div>
+<div id="appContainer" class="app-container">
+<div class="app-header"><div class="app-header-top"><div>
+<div class="app-header-title">AAMBIKA FOODS & BEVERAGES</div><div class="app-header-subtitle">MidWay 5L/10L Filler Report</div>
+<div class="operator-info">👤 <span id="operatorNameDisplay">Operator</span> • Running: <strong id="currentSkuDisplay">10L</strong></div>
+<div class="connection-badge connected" id="connectionBadge"><span class="connection-dot"></span><span id="connectionText">Sheets Connected</span></div>
+</div><div id="userAvatar" class="user-avatar" onclick="toggleUserMenu()">O</div></div></div>
+<div id="userMenu" class="user-menu"><div class="user-menu-header"><div class="user-menu-name" id="menuUserName">Operator</div><div class="user-menu-contact" id="menuUserContact">MidWay Filler</div></div>
+<div class="user-menu-item" onclick="editOperatorName()"><span>✏️</span> Edit Name</div><div class="user-menu-item danger" onclick="logout()"><span>🚪</span> Logout</div></div>
+<div class="nav-tabs"><button class="nav-tab active" onclick="switchTab('report')">📝 Report</button><button class="nav-tab" onclick="switchTab('history')">📋 History</button></div>
+<div id="reportTab">
+<div class="section"><div class="card">
+<div class="card-title"><span class="card-icon" style="background:linear-gradient(135deg,var(--primary),var(--primary-dark))">⚙️</span>Shift Setup</div>
+<div class="form-row" style="margin-bottom:12px"><div class="form-group" style="margin-bottom:0"><label class="form-label">Date</label><div class="info-display" id="reportDateDisplay">--</div><input type="hidden" id="reportDate"></div>
+<div class="form-group" style="margin-bottom:0"><label class="form-label">Shift</label><select id="shiftSelect" class="form-select" onchange="onShiftChange()"><option value="A">Shift A (7AM-3PM)</option><option value="B">Shift B (3PM-11PM)</option><option value="C">Shift C (11PM-7AM)</option></select></div></div>
+<div class="form-row" style="margin-bottom:12px"><div class="form-group" style="margin-bottom:0"><label class="form-label">Starting SKU</label><select id="skuSelect" class="form-select" onchange="onSkuChange()"><option value="10L">10L (430 Jars/Hr)</option><option value="5L">5L (480 Jars/Hr)</option></select></div>
+<div class="form-group" style="margin-bottom:0"><label class="form-label">Manpower</label><input type="number" id="manpowerCount" class="form-input" placeholder="Count"></div></div>
+<div class="form-row" style="margin-bottom:12px"><div class="form-group" style="margin-bottom:0"><label class="form-label">Machine Start Time</label><input type="time" id="machineStartTime" class="form-input"></div>
+<div class="form-group" style="margin-bottom:0"><label class="form-label">Inspection Person</label><input type="text" id="inspectionPerson" class="form-input" placeholder="Name"></div></div>
+<div class="form-group" style="margin-bottom:12px"><label class="form-label">Jar Supplier</label><input type="text" id="jarSupplier" class="form-input" placeholder="Supplier Name"></div>
+<div class="form-group" style="margin-bottom:12px"><label class="form-label">🔢 Shift Opening Counter</label>
+<input type="number" id="startCounter" class="form-input" placeholder="Shift A = 0" onchange="renderHourlyCards()" style="font-size:18px;font-weight:700;text-align:center">
+<div id="counterHint" style="font-size:11px;margin-top:6px"></div></div>
+<div class="target-display"><div class="target-label">Current Target (<span id="targetSkuLabel">10L</span>)</div><div class="target-value"><span id="targetValue">430</span> <span class="target-unit">Jars/Hr</span></div></div>
+</div></div>
+<div class="section"><div class="changeover-card">
+<div class="changeover-hdr"><div><div class="changeover-hdr-title">🔄 SKU Changeover</div><div class="changeover-hdr-sub">Running: <strong id="coCurrentSku">10L</strong></div></div></div>
+<div class="changeover-body">
+<div id="coIdle"><p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;text-align:center">Switch 5L ↔ 10L. Counter resets to 0 for new SKU.</p>
+<button class="co-btn start" onclick="startChangeover()">🔄 Start Changeover</button></div>
+<div id="coActive" style="display:none"><div style="text-align:center;font-size:12px;color:var(--warning);margin-bottom:8px">⏱️ CHANGEOVER IN PROGRESS</div>
+<div class="co-timer" id="coTimer">00:00</div><div style="text-align:center;font-size:13px;color:var(--text-muted);margin-bottom:12px" id="coDirection">10L → 5L</div>
+<button class="co-btn stop" onclick="stopChangeover()">✅ Changeover Complete — Start New SKU</button></div>
+<div id="coLogBox" style="display:none"><div class="co-log" id="coLogEntries"></div></div>
+</div></div></div>
+<div class="section">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+<div class="card-title" style="margin-bottom:0"><span class="card-icon" style="background:linear-gradient(135deg,var(--primary),var(--primary-dark))">📊</span>Hourly Production</div>
+<div style="font-size:13px;color:var(--text-secondary);background:var(--bg-card);padding:6px 12px;border-radius:20px"><span id="completedHours">0</span>/8 Hours</div></div>
+<div style="background:rgba(236,72,153,.08);border:1px solid rgba(236,72,153,.25);border-radius:10px;padding:10px;margin-bottom:14px;font-size:12px;color:var(--primary)">
+💡 Counter resets to <strong>0</strong> after changeover. Net = Filled − Filled Jar Rejection.</div>
+<div id="hourlyCards"></div></div>
+<div class="section"><div class="card">
+<div class="card-title"><span class="card-icon" style="background:linear-gradient(135deg,var(--primary),var(--primary-dark))">🏁</span>End of Shift</div>
+<div class="form-row" style="margin-bottom:12px"><div class="form-group" style="margin-bottom:0"><label class="form-label">Shift End Counter</label><input type="number" id="endCounter" class="form-input" placeholder="Counter"></div>
+<div class="form-group" style="margin-bottom:0"><label class="form-label">Machine Stop Time</label><input type="time" id="machineStopTime" class="form-input"></div></div>
+<div id="skuProductionSummary" style="margin-bottom:16px"></div>
+<div class="form-group"><label class="form-label">Remarks & Abnormalities</label><textarea id="remarks" class="form-input" style="min-height:80px;resize:vertical" placeholder="Enter issues..."></textarea></div>
+</div></div></div>
+<div id="historyTab" class="history-section"><div id="historyList"></div></div>
+<div class="summary-bar">
+<div id="skuSummaryBar" style="margin-bottom:8px"></div>
+<div class="summary-stats">
+<div class="summary-stat"><div class="summary-stat-value" id="totalJars">0</div><div class="summary-stat-label">Total Net</div></div>
+<div class="summary-stat"><div class="summary-stat-value" id="totalEfficiency">0%</div><div class="summary-stat-label">Efficiency</div></div>
+<div class="summary-stat"><div class="summary-stat-value" id="totalWastage">0</div><div class="summary-stat-label">Wastage</div></div>
+<div class="summary-stat"><div class="summary-stat-value" id="totalDowntime">0m</div><div class="summary-stat-label">Downtime</div></div></div>
+<button id="submitBtn" class="submit-btn" onclick="submitReport()">✓ Submit to Google Sheets</button></div>
+</div>
+<div id="toast" class="toast"></div>
+<script>
+const GOOGLE_SCRIPT_URL='https://script.google.com/macros/s/AKfycbxc_k88lKI2jPbwydTJVGGvzjhgauzSYTUocNwm3ZUoYIl1wlq_OcilaPBZAp2ER-1l/exec';
+const TARGETS={'5L':480,'10L':430};
+const SHIFT_START_TIMES={A:7,B:15,C:23};
+let operatorName='',hourlyData=[],shiftStartDateTime=null,currentSku='10L';
+let coInProgress=false,coStartTime=null,coInterval=null,coLogs=[],skuSegments=[];
+
+function getLocalReports(){try{return JSON.parse(localStorage.getItem('midway_reports')||'[]');}catch{return[];}}
+function saveLocalReport(r){const reps=getLocalReports();reps.unshift(r);if(reps.length>50)reps.length=50;localStorage.setItem('midway_reports',JSON.stringify(reps));}
+
+document.addEventListener('DOMContentLoaded',()=>{
+    const now=new Date();document.getElementById('reportDate').value=now.toISOString().split('T')[0];
+    document.getElementById('reportDateDisplay').textContent=formatDate(now);shiftStartDateTime=now;
+    const h=now.getHours();document.getElementById('shiftSelect').value=h>=7&&h<15?'A':h>=15&&h<23?'B':'C';
+    updateTimeSlots();operatorName=localStorage.getItem('midway_operator')||'';
+    document.getElementById('loadingScreen').classList.add('hidden');
+    if(operatorName)showApp();else showLogin();updateConnectionStatus();
+});
+
+function formatDate(d){return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}
+function fmtHM(d){return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
+function updateConnectionStatus(){const b=document.getElementById('connectionBadge'),t=document.getElementById('connectionText');if(GOOGLE_SCRIPT_URL==='YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'){b.className='connection-badge offline';t.textContent='URL Not Set';}else{b.className='connection-badge connected';t.textContent='Sheets Connected';}}
+function showLogin(){document.getElementById('loginScreen').classList.remove('hidden');document.getElementById('appContainer').style.display='none';}
+function showApp(){document.getElementById('loginScreen').classList.add('hidden');document.getElementById('appContainer').style.display='block';const n=operatorName||'Operator';document.getElementById('userAvatar').textContent=n.charAt(0).toUpperCase();document.getElementById('operatorNameDisplay').textContent=n;document.getElementById('menuUserName').textContent=n;}
+function loginOperator(){const n=document.getElementById('loginName').value.trim();if(!n){document.getElementById('errorMessage').textContent='Please enter your name';document.getElementById('errorMessage').classList.add('show');return;}operatorName=n;localStorage.setItem('midway_operator',n);showApp();showToast('Welcome, '+n+'!','success');}
+function editOperatorName(){toggleUserMenu();const n=prompt('Enter your name:',operatorName);if(n&&n.trim()){operatorName=n.trim();localStorage.setItem('midway_operator',operatorName);document.getElementById('operatorNameDisplay').textContent=operatorName;document.getElementById('menuUserName').textContent=operatorName;document.getElementById('userAvatar').textContent=operatorName.charAt(0).toUpperCase();showToast('Name updated!','success');}}
+function logout(){localStorage.removeItem('midway_operator');operatorName='';toggleUserMenu();showLogin();}
+function toggleUserMenu(){document.getElementById('userMenu').classList.toggle('show');}
+document.addEventListener('click',e=>{if(!e.target.closest('#userAvatar')&&!e.target.closest('#userMenu'))document.getElementById('userMenu').classList.remove('show');});
+function switchTab(tab){document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));event.target.classList.add('active');document.getElementById('reportTab').style.display=tab==='report'?'block':'none';document.getElementById('historyTab').style.display=tab==='history'?'block':'none';document.querySelector('.summary-bar').style.display=tab==='report'?'block':'none';if(tab==='history')loadHistory();}
+function onShiftChange(){updateTimeSlots();}
+function onSkuChange(){currentSku=document.getElementById('skuSelect').value;updateTargetUI();hourlyData.forEach(h=>{if(h.counterReading===''){h.target=TARGETS[currentSku];h.sku=currentSku;}});renderHourlyCards();}
+function updateTargetUI(){document.getElementById('targetValue').textContent=TARGETS[currentSku];document.getElementById('targetSkuLabel').textContent=currentSku;document.getElementById('currentSkuDisplay').textContent=currentSku;document.getElementById('coCurrentSku').textContent=currentSku;}
+
+function updateTimeSlots(){
+    const shift=document.getElementById('shiftSelect').value,startHour=SHIFT_START_TIMES[shift];
+    currentSku=document.getElementById('skuSelect').value;
+    const ci=document.getElementById('startCounter'),ch=document.getElementById('counterHint');
+    if(shift==='A'){ci.value=0;ch.textContent='✅ Shift A — Counter starts at 0';ch.style.color='#059669';}
+    else{if(!ci.value||ci.value==='0')ci.value='';ch.textContent="⚠️ Enter previous shift's end counter";ch.style.color='#f59e0b';}
+    hourlyData=[];
+    for(let i=0;i<8;i++){const hr=(startHour+i)%24,nh=(hr+1)%24,fmt=h=>{const p=h>=12?'PM':'AM';return`${h%12||12}:00 ${p}`;};
+        hourlyData.push({id:i+1,timeLabel:`${fmt(hr)} - ${fmt(nh)}`,target:TARGETS[currentSku],sku:currentSku,counterReading:'',jarsFilled:0,wastageEmptyJar:'',wastageCaps:'',wastageFilledJar:'',wastageReason:'',downtimes:[]});}
+    skuSegments=[{sku:currentSku,startHourIndex:0}];coLogs=[];coInProgress=false;
+    if(coInterval){clearInterval(coInterval);coInterval=null;}
+    document.getElementById('coIdle').style.display='block';document.getElementById('coActive').style.display='none';document.getElementById('coLogBox').style.display='none';
+    updateTargetUI();renderHourlyCards();
+}
+
+function startChangeover(){
+    coInProgress=true;coStartTime=new Date();
+    document.getElementById('coIdle').style.display='none';document.getElementById('coActive').style.display='block';
+    const toSku=currentSku==='5L'?'10L':'5L';
+    document.getElementById('coDirection').textContent=currentSku+' → '+toSku;
+    document.getElementById('coTimer').className='co-timer';document.getElementById('coTimer').textContent='00:00';
+    coInterval=setInterval(()=>{const el=Math.floor((Date.now()-coStartTime.getTime())/1000);document.getElementById('coTimer').textContent=String(Math.floor(el/60)).padStart(2,'0')+':'+String(el%60).padStart(2,'0');},1000);
+    showToast('⏱️ Changeover: '+currentSku+' → '+toSku,'success');
+}
+
+function stopChangeover(){
+    if(!coInProgress)return;clearInterval(coInterval);coInterval=null;
+    const endTime=new Date(),durMins=Math.ceil((endTime.getTime()-coStartTime.getTime())/60000);
+    const fromSku=currentSku,toSku=fromSku==='5L'?'10L':'5L';
+    coLogs.push({from:fromSku,to:toSku,startTime:fmtHM(coStartTime),endTime:fmtHM(endTime),durationMins:durMins});
+    let hi=hourlyData.findIndex(h=>h.counterReading==='');if(hi===-1)hi=7;
+    hourlyData[hi].downtimes.push({start:fmtHM(coStartTime),end:fmtHM(endTime),mins:durMins,reason:'🔄 Changeover: '+fromSku+' → '+toSku});
+    currentSku=toSku;document.getElementById('skuSelect').value=toSku;
+    hourlyData.forEach((h,i)=>{if(h.counterReading===''){h.target=TARGETS[toSku];h.sku=toSku;}});
+    skuSegments.push({sku:toSku,startHourIndex:hi});
+    coInProgress=false;document.getElementById('coTimer').className='co-timer done';
+    document.getElementById('coActive').style.display='none';document.getElementById('coIdle').style.display='block';
+    document.getElementById('coLogBox').style.display='block';
+    document.getElementById('coLogEntries').innerHTML=coLogs.map((c,i)=>`<div class="co-log-entry">🔄 #${i+1}: ${c.from} → ${c.to} | ${c.startTime}-${c.endTime} | <strong>${c.durationMins}m</strong></div>`).join('');
+    updateTargetUI();renderHourlyCards();showToast('✅ Now running '+toSku+' | Counter=0 | '+durMins+'m logged','success');
+}
+
+function renderHourlyCards(){
+    const container=document.getElementById('hourlyCards');
+    const shiftOpenC=parseInt(document.getElementById('startCounter').value),hasSC=document.getElementById('startCounter').value!=='';
+    let html='',lastSku='';
+    hourlyData.forEach((hour,index)=>{
+        if(hour.sku!==lastSku){
+            if(index>0)html+=`<div class="sku-separator"><div class="sku-separator-title">${hour.sku==='5L'?'🔵':'🟣'} ${hour.sku} Production — Target: ${TARGETS[hour.sku]} Jars/Hr</div><div class="sku-separator-sub">Counter resets to 0</div></div>`;
+            else html+=`<div class="sku-separator"><div class="sku-separator-title">${hour.sku==='5L'?'🔵':'🟣'} ${hour.sku} Production — Target: ${TARGETS[hour.sku]} Jars/Hr</div><div class="sku-separator-sub">Starting SKU</div></div>`;
+            lastSku=hour.sku;
+        }
+        const reading=parseInt(hour.counterReading),hasR=hour.counterReading!=='';
+        let prevR,prevLabel;
+        const mySegment=skuSegments.filter(s=>s.startHourIndex<=index).pop();
+        const isFirst=mySegment&&mySegment.startHourIndex===index;
+        if(isFirst){if(index===0){prevR=hasSC?shiftOpenC:NaN;prevLabel='Opening: '+(hasSC?shiftOpenC.toLocaleString():'?');}else{prevR=0;prevLabel='New SKU start: 0';}}
+        else{const pr=hourlyData[index-1].counterReading;prevR=pr!==''?parseInt(pr):NaN;prevLabel='Hr '+index+': '+(pr!==''?parseInt(pr).toLocaleString():'?');}
+        let jarsFilled=0;if(hasR&&!isNaN(reading)&&!isNaN(prevR)&&reading>=prevR)jarsFilled=reading-prevR;
+        hour.jarsFilled=jarsFilled;
+        const wE=parseInt(hour.wastageEmptyJar)||0,wC=parseInt(hour.wastageCaps)||0,wF=parseInt(hour.wastageFilledJar)||0;
+        const netJars=Math.max(0,jarsFilled-wF),eff=hour.target>0&&jarsFilled>0?((netJars/hour.target)*100):0;
+        const effClass=eff>=90?'eff-high':eff>=70?'eff-medium':'eff-low';
+        const isCompleted=hour.counterReading!=='',isActive=!isCompleted&&(index===0||hourlyData[index-1].counterReading!==''||isFirst);
+        const totalDTM=hour.downtimes.reduce((s,d)=>s+(parseInt(d.mins)||0),0);
+        const hasWaste=wE>0||wC>0||wF>0;const skuClass=hour.sku==='5L'?'sku-5l':'sku-10l';
+        html+=`<div class="hour-card ${isCompleted?'completed':''} ${isActive?'active':''}" id="hourCard${index}">
+            <div class="hour-header" onclick="toggleHourCard(${index})"><div class="hour-header-left"><div class="hour-number">${isCompleted?'✓':hour.id}</div>
+                <div><div class="hour-time">${hour.timeLabel}<span class="sku-badge ${skuClass}">${hour.sku}</span></div><div class="hour-target">Target: ${hour.target} jars${totalDTM>0?' • ⏱️'+totalDTM+'m':''}</div></div></div>
+                <div style="display:flex;align-items:center;gap:8px">${isCompleted?`<span class="hour-efficiency ${effClass}">${eff.toFixed(0)}%</span>`:''}<div class="hour-expand">▼</div></div></div>
+            <div class="hour-body">
+                <div style="margin-bottom:14px"><div class="hour-input-group"><label>🔢 Machine Counter Reading</label>
+                    <input type="number" class="hour-input" value="${hour.counterReading}" onchange="updateHourData(${index},'counterReading',this.value)" placeholder="${isFirst&&index>0?'Starts from 0 for '+hour.sku:'Enter counter'}">
+                </div><div style="font-size:10px;color:var(--text-muted);margin-top:4px">Previous: ${prevLabel}</div></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                    <div><div class="calc-label">🪣 Jars Filled</div><div class="calc-display">${jarsFilled>0?jarsFilled.toLocaleString():'—'}</div></div>
+                    <div><div class="calc-label">📊 Eff (${hour.sku})</div><div class="calc-display" style="${eff>=90?'color:#059669;border-color:#059669;':eff>=70?'color:#f59e0b;border-color:#f59e0b;':'color:#dc2626;border-color:#dc2626;'}">${jarsFilled>0?eff.toFixed(1)+'%':'—'}</div></div></div>
+                <div class="wastage-section"><div class="wastage-title">🗑️ Wastage / Rejection</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+                        <div class="hour-input-group"><label>Empty Jar</label><input type="number" class="hour-input" style="font-size:14px;padding:10px" value="${hour.wastageEmptyJar}" onchange="updateHourData(${index},'wastageEmptyJar',this.value)" placeholder="0"></div>
+                        <div class="hour-input-group"><label>Caps</label><input type="number" class="hour-input" style="font-size:14px;padding:10px" value="${hour.wastageCaps}" onchange="updateHourData(${index},'wastageCaps',this.value)" placeholder="0"></div>
+                        <div class="hour-input-group"><label>Filled Jar</label><input type="number" class="hour-input" style="font-size:14px;padding:10px" value="${hour.wastageFilledJar}" onchange="updateHourData(${index},'wastageFilledJar',this.value)" placeholder="0"></div></div>
+                    ${hasWaste?`<div style="background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.3);border-radius:8px;padding:10px;margin-top:10px"><div style="font-size:11px;font-weight:600;color:var(--danger);margin-bottom:6px">❌ Wastage Reason (Required)</div>
+                        <textarea class="hour-input" rows="2" style="resize:none;font-size:14px;border-color:rgba(220,38,38,.3)" onchange="updateHourData(${index},'wastageReason',this.value)" placeholder="Enter reason...">${hour.wastageReason||''}</textarea></div>`:''}
+                    ${(jarsFilled>0&&wF>0)?`<div style="background:rgba(236,72,153,.1);border:2px solid var(--primary);border-radius:10px;padding:10px;margin-top:10px;text-align:center"><div style="font-size:10px;color:var(--primary);font-weight:600">NET JARS</div><div style="font-size:18px;font-weight:800;color:var(--primary)">${netJars}</div><div style="font-size:10px;color:var(--text-muted)">${jarsFilled} − ${wF} = ${netJars}</div></div>`:''}
+                </div>
+                <div class="downtime-section"><div class="downtime-header"><div class="downtime-title">⏱️ Downtime (${hour.downtimes.length})</div><button class="add-btn warning" onclick="addDT(${index})">+ Add</button></div>
+                    ${hour.downtimes.map((dt,di)=>`<div class="downtime-entry"><div class="downtime-entry-header"><div class="downtime-entry-title">#${di+1} ${dt.mins?'('+dt.mins+'m)':''}</div><button class="remove-btn" onclick="rmDT(${index},${di})">✕</button></div>
+                        <div class="downtime-row"><div><label style="font-size:10px;color:var(--text-muted)">START</label><input type="time" class="downtime-input" value="${dt.start}" onchange="dtTime(${index},${di},'start',this.value)"></div>
+                        <div><label style="font-size:10px;color:var(--text-muted)">END</label><input type="time" class="downtime-input" value="${dt.end}" onchange="dtTime(${index},${di},'end',this.value)"></div>
+                        <div><label style="font-size:10px;color:var(--text-muted)">MINS</label><input type="number" class="downtime-input" value="${dt.mins}" style="background:var(--border);font-weight:700" readonly></div></div>
+                        <textarea class="downtime-reason" rows="1" onchange="dtUpd(${index},${di},'reason',this.value)" placeholder="Reason...">${dt.reason||''}</textarea></div>`).join('')}
+                </div>
+            </div></div>`;
+    });
+    container.innerHTML=html;updateSummary();
+}
+
+function toggleHourCard(i){document.getElementById('hourCard'+i).classList.toggle('expanded');}
+function updateHourData(i,f,v){hourlyData[i][f]=v;renderHourlyCards();document.getElementById('hourCard'+i).classList.add('expanded');}
+function addDT(hi){hourlyData[hi].downtimes.push({start:'',end:'',mins:'',reason:''});renderHourlyCards();document.getElementById('hourCard'+hi).classList.add('expanded');}
+function rmDT(hi,di){hourlyData[hi].downtimes.splice(di,1);renderHourlyCards();document.getElementById('hourCard'+hi).classList.add('expanded');}
+function dtUpd(hi,di,f,v){hourlyData[hi].downtimes[di][f]=v;updateSummary();}
+function dtTime(hi,di,f,v){const dt=hourlyData[hi].downtimes[di];dt[f]=v;if(dt.start&&dt.end){const[sh,sm]=dt.start.split(':').map(Number),[eh,em]=dt.end.split(':').map(Number);let sM=sh*60+sm,eM=eh*60+em;if(eM<sM)eM+=1440;dt.mins=Math.max(0,eM-sM);}renderHourlyCards();document.getElementById('hourCard'+hi).classList.add('expanded');}
+
+function updateSummary(){
+    let tJ=0,tNet=0,tW=0,tT=0,tDT=0;
+    const skuT={};
+    hourlyData.forEach(h=>{if(h.counterReading==='')return;const wF=parseInt(h.wastageFilledJar)||0,wE=parseInt(h.wastageEmptyJar)||0,wC=parseInt(h.wastageCaps)||0;
+        const net=Math.max(0,h.jarsFilled-wF);tJ+=h.jarsFilled;tNet+=net;tW+=wE+wC+wF;tT+=h.target;
+        h.downtimes.forEach(d=>{tDT+=parseInt(d.mins)||0;});
+        if(!skuT[h.sku])skuT[h.sku]={filled:0,net:0,target:0,waste:0};
+        skuT[h.sku].filled+=h.jarsFilled;skuT[h.sku].net+=net;skuT[h.sku].target+=h.target;skuT[h.sku].waste+=wE+wC+wF;
+    });
+    const eff=tT>0?((tNet/tT)*100).toFixed(0):0;
+    document.getElementById('totalJars').textContent=tNet.toLocaleString();document.getElementById('totalEfficiency').textContent=eff+'%';
+    document.getElementById('totalWastage').textContent=tW;document.getElementById('totalDowntime').textContent=tDT+'m';
+    document.getElementById('completedHours').textContent=hourlyData.filter(h=>h.counterReading!=='').length;
+    // Per-SKU summary in bottom bar
+    const skuKeys=Object.keys(skuT);
+    if(skuKeys.length>1){
+        document.getElementById('skuSummaryBar').innerHTML=skuKeys.map(k=>{
+            const s=skuT[k],e=s.target>0?((s.net/s.target)*100).toFixed(0):0;
+            const col=k==='5L'?'#06b6d4':'#8b5cf6';
+            return`<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(${k==='5L'?'6,182,212':'139,92,246'},.15);border:1px solid ${col};border-radius:8px;padding:4px 10px;margin-right:6px;font-size:11px;color:${col};font-weight:600">${k==='5L'?'🔵':'🟣'} ${k}: ${s.net} jars (${e}%)</div>`;
+        }).join('');
+    } else { document.getElementById('skuSummaryBar').innerHTML=''; }
+    // Per-SKU production summary in End of Shift
+    const sumDiv=document.getElementById('skuProductionSummary');
+    if(skuKeys.length>0){
+        sumDiv.innerHTML='<div style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);border-radius:12px;padding:14px;margin-top:4px"><div style="font-size:12px;font-weight:700;color:var(--purple);margin-bottom:10px">📊 SKU-wise Production Summary</div>'+
+            skuKeys.map(k=>{const s=skuT[k],e=s.target>0?((s.net/s.target)*100).toFixed(1):0;const col=k==='5L'?'#06b6d4':'#8b5cf6';
+                return`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(${k==='5L'?'6,182,212':'139,92,246'},.08);border-radius:8px;margin-bottom:6px">
+                    <div style="font-size:13px;font-weight:700;color:${col}">${k==='5L'?'🔵':'🟣'} ${k}</div>
+                    <div style="font-size:12px;color:var(--text-secondary)">Filled: <strong style="color:var(--text-primary)">${s.filled}</strong> | Net: <strong style="color:${col}">${s.net}</strong> | Waste: <strong style="color:var(--danger)">${s.waste}</strong> | Eff: <strong style="color:${col}">${e}%</strong></div></div>`;
+            }).join('')+
+            `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(236,72,153,.1);border-radius:8px;border:1px solid var(--primary)">
+                <div style="font-size:13px;font-weight:700;color:var(--primary)">🏭 SHIFT TOTAL</div>
+                <div style="font-size:12px;color:var(--text-secondary)">Filled: <strong style="color:var(--text-primary)">${tJ}</strong> | Net: <strong style="color:var(--primary)">${tNet}</strong> | Waste: <strong style="color:var(--danger)">${tW}</strong> | Eff: <strong style="color:var(--primary)">${eff}%</strong></div></div></div>`;
+    } else { sumDiv.innerHTML=''; }
+}
+
+async function submitReport(){
+    const btn=document.getElementById('submitBtn'),comp=hourlyData.filter(h=>h.counterReading!=='').length;
+    if(comp===0){showToast('Fill at least one hour','error');return;}
+    if(coInProgress){showToast('Complete changeover first!','error');return;}
+    const missing=hourlyData.filter(h=>{const w=(parseInt(h.wastageEmptyJar)||0)+(parseInt(h.wastageCaps)||0)+(parseInt(h.wastageFilledJar)||0);return w>0&&!h.wastageReason?.trim();});
+    if(missing.length>0){showToast('Enter wastage reason for Hr '+missing[0].id,'error');return;}
+    if(GOOGLE_SCRIPT_URL==='YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'){showToast('Sheets URL not set!','error');return;}
+    btn.disabled=true;btn.innerHTML='<span class="loading-spinner" style="width:20px;height:20px;border-width:2px"></span> Sending...';
+    const skuTotals={};
+    hourlyData.forEach(h=>{if(h.counterReading==='')return;if(!skuTotals[h.sku])skuTotals[h.sku]={filled:0,net:0,target:0,wE:0,wC:0,wF:0};
+        const wF=parseInt(h.wastageFilledJar)||0;skuTotals[h.sku].filled+=h.jarsFilled;skuTotals[h.sku].net+=Math.max(0,h.jarsFilled-wF);
+        skuTotals[h.sku].target+=h.target;skuTotals[h.sku].wE+=parseInt(h.wastageEmptyJar)||0;skuTotals[h.sku].wC+=parseInt(h.wastageCaps)||0;skuTotals[h.sku].wF+=wF;});
+    let tJ=0,tNet=0,tW=0,tT=0,tDT=0;
+    hourlyData.forEach(h=>{if(h.counterReading==='')return;const wF=parseInt(h.wastageFilledJar)||0,wE=parseInt(h.wastageEmptyJar)||0,wC=parseInt(h.wastageCaps)||0;
+        tJ+=h.jarsFilled;tNet+=Math.max(0,h.jarsFilled-wF);tW+=wE+wC+wF;tT+=h.target;h.downtimes.forEach(d=>{tDT+=parseInt(d.mins)||0;});});
+    const report={
+        reportId:'MW-'+Date.now().toString(36).toUpperCase(),machine:'midway_filler',operatorName,
+        date:document.getElementById('reportDate').value,shift:document.getElementById('shiftSelect').value,
+        startingSku:document.getElementById('skuSelect').value,manpowerCount:document.getElementById('manpowerCount').value,
+        inspectionPerson:document.getElementById('inspectionPerson').value,jarSupplier:document.getElementById('jarSupplier').value,
+        startCounter:document.getElementById('startCounter').value,endCounter:document.getElementById('endCounter').value,
+        machineStartTime:document.getElementById('machineStartTime').value,machineStopTime:document.getElementById('machineStopTime').value,
+        remarks:document.getElementById('remarks').value,
+        hourlyData,changeoverLogs:coLogs,skuSegments,skuTotals,
+        totals:{totalJarsFilled:tJ,netJars:tNet,totalWaste:tW,totalTarget:tT,efficiency:tT>0?((tNet/tT)*100).toFixed(1):0,totalDowntime:tDT,counterDiff:(parseInt(document.getElementById('endCounter').value)||0)-(parseInt(document.getElementById('startCounter').value)||0)}
+    };
+    try{await fetch(GOOGLE_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(report)});report.createdAt=new Date().toISOString();saveLocalReport(report);showToast('✅ Report sent!','success');resetForm();}
+    catch(err){report.createdAt=new Date().toISOString();report.pendingSync=true;saveLocalReport(report);showToast('⚠️ Saved locally','error');}
+    btn.disabled=false;btn.innerHTML='✓ Submit to Google Sheets';
+}
+
+function resetForm(){const now=new Date();document.getElementById('reportDate').value=now.toISOString().split('T')[0];document.getElementById('reportDateDisplay').textContent=formatDate(now);
+    ['manpowerCount','inspectionPerson','jarSupplier','startCounter','endCounter','machineStartTime','machineStopTime','remarks'].forEach(id=>document.getElementById(id).value='');
+    coLogs=[];skuSegments=[];updateTimeSlots();}
+
+function loadHistory(){const c=document.getElementById('historyList'),reps=getLocalReports();
+    if(reps.length===0){c.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No reports yet</div></div>';return;}
+    c.innerHTML=reps.map(d=>{const ec=d.totals.efficiency>=90?'eff-high':d.totals.efficiency>=70?'eff-medium':'eff-low',si=d.pendingSync?'⏳':'✅';
+        const skuInfo=d.skuTotals?Object.entries(d.skuTotals).map(([k,v])=>k+':'+v.net).join(' + '):'';
+        return`<div class="history-card"><div class="history-header"><div><div class="history-date">${d.date} ${si}</div><div class="history-shift">Shift ${d.shift} • ${d.startingSku}${d.changeoverLogs?.length?' • 🔄×'+d.changeoverLogs.length:''} • ${d.operatorName}</div>
+            ${skuInfo?`<div style="font-size:11px;color:var(--purple);margin-top:2px">${skuInfo}</div>`:''}</div><span class="hour-efficiency ${ec}">${d.totals.efficiency}%</span></div>
+        <div class="history-stats"><div class="history-stat"><div class="history-stat-value">${(d.totals.netJars||0).toLocaleString()}</div><div class="history-stat-label">Net Jars</div></div>
+        <div class="history-stat"><div class="history-stat-value" style="color:var(--danger)">${d.totals.totalWaste||0}</div><div class="history-stat-label">Wastage</div></div>
+        <div class="history-stat"><div class="history-stat-value" style="color:var(--warning)">${d.totals.totalDowntime}m</div><div class="history-stat-label">Downtime</div></div></div></div>`;}).join('');}
+
+function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.classList.remove('show'),3000);}
+let deferredPrompt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBanner').style.display='flex';});
+function installApp(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{deferredPrompt=null;document.getElementById('installBanner').style.display='none';});}}
+function dismissInstall(){document.getElementById('installBanner').style.display='none';}
+if(window.matchMedia('(display-mode:standalone)').matches)document.addEventListener('DOMContentLoaded',()=>{const b=document.getElementById('installBanner');if(b)b.style.display='none';});
+if('serviceWorker' in navigator){const sw="const C='midway-v2';self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['./'])));self.skipWaiting();});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))));self.clients.claim();});self.addEventListener('fetch',e=>{if(e.request.url.includes('script.google.com')||e.request.method==='POST'){e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));}else{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));}});";navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{});}
+</script>
+</body></html>
